@@ -26,7 +26,19 @@ app.get("/search", function(request, response) {
         response.render('search_results.html', {restaurants: results});
     })
     .catch(function(error) {
-        console.error("DATABASE ERROR: ", error);
+        console.error("SEARCH ERROR: ", error);
+        response.redirect('/');
+    });
+});
+
+app.get("/restaurant/:id", function(request, response) {
+    let restaurantID = request.params.id;
+    db.one('SELECT * FROM restaurant WHERE id = $1', [restaurantID])
+    .then(function(result) {
+        response.render('restaurant.html', {restaurant: result});
+    })
+    .catch(function(error) {
+        console.error("RESTAURANT ERROR: ", error);
         response.redirect('/');
     });
 });
