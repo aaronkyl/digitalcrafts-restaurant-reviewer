@@ -19,7 +19,7 @@ app.get("/", function(request, response) {
     response.render('index.html', {});
 });
 
-app.get("/search", function(request, response) {
+app.get("/search", function(request, response, next) {
     let searchTerm = request.query.searchTerm;
     db.any('SELECT * FROM restaurant WHERE name ILIKE $1', ['%' + searchTerm + '%'])
     .then(function(results) {
@@ -27,19 +27,22 @@ app.get("/search", function(request, response) {
     })
     .catch(function(error) {
         console.error("SEARCH ERROR: ", error);
-        response.redirect('/');
+        next(error);
     });
 });
 
-app.get("/restaurant/:id", function(request, response) {
+app.get("/restaurant/:id", function(request, response, next) {
     let restaurantID = request.params.id;
     db.one('SELECT * FROM restaurant WHERE id = $1', [restaurantID])
     .then(function(result) {
-        response.render('restaurant.html', {restaurant: result});
+        db.any('SELECT * FROM review WHERE restaurant_id = $1', [restaurantID])
+        .then(function(reviews) {
+            response.render('restaurant.html', {restaurant: result, reviews: reviews});
+        });
     })
     .catch(function(error) {
-        console.error("RESTAURANT ERROR: ", error);
-        response.redirect('/');
+        console.error("RESTAURANT/REVIEWS ERROR: ", error);
+        next(error);
     });
 });
 

@@ -2,8 +2,18 @@
 <html>
     <head></head>
     <body>
-        {{ restaurant.name }}
-        {{ restaurant.address }}
-        {{ restaurant.category }}
+        <h2>{{ restaurant.name }}</h2>
+        <p>{{ restaurant.address }}</p>
+        <p>{{ restaurant.category }}</p>
+        <h3>REVIEWS</h3>
+        {% if not reviews.length %}
+            <p>No Reviews</p>
+        {% else %}
+            {% for review in reviews %}
+                <h4>{{ review.title }}</h4>
+                <p>{{ review.stars }}</p>
+                <p>{{ review.review }}</p>
+            {% endfor %}
+        {% endif %}
     </body>
 </html>
